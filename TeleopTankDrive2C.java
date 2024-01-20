@@ -53,8 +53,8 @@
    * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
    */
   
-@TeleOp(name="Main Teleop OpMode", group="Linear OpMode")
-public class Teleop extends LinearOpMode 
+@TeleOp(name="2C Tank Drive", group="Linear OpMode")
+public class TeleopTankDrive2C extends LinearOpMode 
 {
     // Declare OpMode members.
     private RobotBase robot = new RobotBase();
@@ -117,7 +117,7 @@ public class Teleop extends LinearOpMode
         // elevator.setDirection(DcMotor.Direction.REVERSE);
         // elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         elevatorStartingPosition = robot.elevator.getCurrentPosition();
-        elevatorMaxPosition = elevatorMaxPosition + robot.ELEVATOR_MAX_DISPLACEMENT;
+        elevatorMaxPosition = elevatorStartingPosition + robot.ELEVATOR_MAX_DISPLACEMENT;
  
         // Turret rotation direction set so that positive power moves the tower right.
         // turretRotation.setDirection(DcMotor.Direction.FORWARD);
@@ -161,11 +161,11 @@ public class Teleop extends LinearOpMode
             // Elevator up/down
             int elevatorCurrentPosition = robot.elevator.getCurrentPosition();
             double elevatorPower = 0;
-            elevatorPower = robot.ELEVATOR_POWER_MAINTAIN_POSITION;
-            if (gamepad1.right_bumper) {
+            // elevatorPower = robot.ELEVATOR_POWER_MAINTAIN_POSITION;
+            if (gamepad2.left_stick_y < -0.5) {
                 if (elevatorCurrentPosition < elevatorMaxPosition)
                     elevatorPower = 0.6;
-            } else if (gamepad1.left_bumper) {
+            } else if (gamepad2.left_stick_y > 0.5) {
                 if (elevatorCurrentPosition > elevatorStartingPosition)
                     elevatorPower = 0;
             }
@@ -184,9 +184,9 @@ public class Teleop extends LinearOpMode
             // turretRotation.setPower(turretRotationPower);
  
             // Gripper
-            if (gamepad1.x) {
+            if (gamepad2.right_stick_y > 0.5) {
                 robot.gripServo.setPosition(robot.GRIP_CLOSED_POSITION);
-            } else if (gamepad1.a) {
+            } else if (gamepad2.right_stick_y < -0.5) {
                 robot.gripServo.setPosition(robot.GRIP_OPEN_POSITION);
             }
  
@@ -198,12 +198,17 @@ public class Teleop extends LinearOpMode
             }
             robot.launcher.setPower(launcherPower);
  
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            //  telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-            telemetry.addData("Elevator", "power (%.3f), position (%d)", elevatorPower, elevatorCurrentPosition);
-            // telemetry.addData("Rotation", "power (%.3f), position (%d)", turretRotationPower, turretRotationCurrentPosition);
-            telemetry.update();
+            try {
+                // Show the elapsed game time and wheel power.
+                telemetry.addData("Status", "Run Time: " + runtime.toString());
+                // telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+                // telemetry.addData("Elevator", "power (%.3f), position (%d)", elevatorPower, elevatorCurrentPosition);
+                // telemetry.addData("Elevator", "start (%d), max (%d)", elevatorStartingPosition, elevatorMaxPosition);
+                // telemetry.addData("Rotation", "power (%.3f), position (%d)", turretRotationPower, turretRotationCurrentPosition);
+                telemetry.update();
+            }
+            catch (Exception e) {
+            }
         }
     }
  }
